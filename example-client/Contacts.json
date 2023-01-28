@@ -1,0 +1,23 @@
+{
+    "profile": {
+        "name": "Gaga",
+        "image": "./images/gaga.jpg"
+    },
+    "contacts": [
+        {
+            "name": "Charli",
+            "image": "./images/charli.jpg",
+            "uuid": "d5cfa01b-7e91-411c-a1f6-83bdd3a57c44"
+        },
+        {
+            "name": "Kim",
+            "image": "./images/kim.jpg",
+            "uuid": "e5e79870-2ace-4c5b-b4c7-fb80cd2ad6a9"
+        }, 
+        {
+            "name": "Ari",
+            "image": "./images/ari.jpg",
+            "uuid": "1402636b-780f-441e-9a59-cea2054cc98e"
+        }
+    ]
+}

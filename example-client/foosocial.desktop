@@ -1,0 +1,23 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Name=FooSocial
+Exec=/path/to/client
+Icon=internet-web-browser
+Terminal=false
+Type=Application
+Categories=Network;
+MimeType=text/plain;image/png;
+Share=Generic;ChangeProfileImage;
+DynamicShareExec=/path/to/client --dynamic --share-mime=%m --share-uuid=%s --target-uuid=%t
+
+[Desktop Share Generic]
+Name=Share with peeps
+Exec=/path/to/client --send --share-mime=%m --share-uuid=%s
+Icon=group
+MimeType=image/png;
+
+[Desktop Share ChangeProfileImage]
+Name=Change your profile image
+Exec=/path/to/client --userimage --share-mime=%m --share-uuid=%s
+Icon=user
+MimeType=image/png;
