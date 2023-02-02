@@ -24,15 +24,23 @@ ShareReceiver::ShareReceiver(ContactModel *shareModel) : m_shareModel(shareModel
                            QDBusConnection::sessionBus(), this);
 }
 
+QString ShareReceiver::target() const {
+    return m_target;
+}
+
+QString ShareReceiver::mime() const {
+    return m_mime;
+}
+
 QVariantMap ShareReceiver::extras() const {
     return m_extras;
 }
 
-void ShareReceiver::receive(QString uuid) {
-    QDBusPendingReply<QVariantMap> reply = m_shareReceiver->Receive(uuid);
-    reply.waitForFinished();
-    m_extras = reply.value();
-    emit extrasChanged();
+void ShareReceiver::Receive(QString target, QString mime, QVariantMap extras) {
+    m_target = target;
+    m_mime = mime;
+    m_extras = extras;
+    emit dataChanged();
 };
 
 void ShareReceiver::dynamicRegister() {
@@ -48,11 +56,11 @@ void ShareReceiver::dynamicRegister() {
         share_target["priority"] = QVariant(int(QRandomGenerator::global()->bounded(0, 100)));
         dynamicList.push_back(share_target);
     }
-    m_shareReceiver->DynamicRegister("/usr/share/applications/foosocial.desktop", dynamicList);
+    m_shareReceiver->DynamicRegister("/usr/share/applications/org.bar.foosocial.desktop", dynamicList);
 }
 
 void ShareReceiver::dynamicClear() {
-    m_shareReceiver->DynamicClear("/usr/share/applications/foosocial.desktop");
+    m_shareReceiver->DynamicClear("/usr/share/applications/org.bar.foosocial.desktop");
 }
 
 QVariantList ShareReceiver::variantListFromKey(QString key) {

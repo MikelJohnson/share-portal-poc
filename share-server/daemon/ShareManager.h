@@ -20,6 +20,9 @@
 
 #include <QObject>
 #include <QVariant>
+#include <memory>
+#include "qmake/share_target_interface.h"
+#include <QDBusServiceWatcher>
 
 class ShareManager : public QObject
 {
@@ -29,11 +32,13 @@ public:
 
 public slots:
     void Send(const QString &mime, const QVariantMap &extras);
-    QVariantMap Receive(const QString &uuid);
     void DynamicRegister(const QString &app, const QList<QVariantMap> &targets);
     void DynamicClear(const QString &app);
-
+    void Process(QStringList info, QString uuid, QString service);
+    void Receive(const QString &target, const QString &uuid);
 private:
+    std::unique_ptr<org::freedesktop::ShareTarget> m_share_target;
+    std::unique_ptr<QDBusServiceWatcher> m_dbus_watcher;
     QVariantMap m_requests;
 };
 

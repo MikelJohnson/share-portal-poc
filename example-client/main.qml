@@ -46,20 +46,20 @@ ApplicationWindow {
         }
     }
     Connections {
-        target: lockHandler
-        function onRequestFromLock(mode, share_mime, share_uuid, target_uuid) {
-            switch(mode) {
-                case "debug-info":
-                    viewDebugInfo.activated(share_mime, share_uuid)
+        target: shareReceiver
+        function onDataChanged() {
+            switch(shareReceiver.target) {
+                case "Debug":
+                    viewDebugInfo.activated()
                     break
-                case "send":
-                    shareSelector.activated(share_mime, share_uuid)
+                case "Generic":
+                    shareSelector.activated()
                     break
-                case "userimage":
-                    changeProfileImage.activated(share_mime, share_uuid)
+                case "ChangeProfileImage":
+                    changeProfileImage.activated()
                     break
-                case "dynamic":
-                    shareDirect.activated(share_mime, share_uuid, target_uuid)
+                default:
+                    shareDirect.activated()
                     break
             }
         }
@@ -108,8 +108,6 @@ ApplicationWindow {
                 anchors.fill: parent
                 anchors.margins: 10
 
-                property string shareMime
-                property string shareUuid
                 property string debugText
                 Column {
                     spacing: 10
@@ -120,20 +118,12 @@ ApplicationWindow {
                         text: "Imagine a pretty preview here"
                     }
                 }
-                onShareUuidChanged: {
-                    if (shareUuid === "") {
-                        return
-                    }
-                    shareReceiver.receive(shareUuid)
-                    userData.debugText = shareReceiver.variantListFromKey("files")[0]
-                }
             }
 
         }
-        signal activated(string share_mime, string share_uuid)
+        signal activated()
         onActivated: {
-            userData.shareMime = share_mime
-            userData.shareUuid = share_uuid
+            userData.debugText = shareReceiver.variantListFromKey("files")[0]
             open()
         }
     }
@@ -165,10 +155,9 @@ ApplicationWindow {
                 anchors.margins: 10
             }
         }
-        signal activated(string share_mime, string share_uuid)
+        signal activated()
         onActivated: {
-            debugData.shareMime = share_mime
-            debugData.shareUuid = share_uuid
+            debugData.fetch()
             open()
         }
     }
@@ -214,10 +203,9 @@ ApplicationWindow {
                 anchors.margins: 10
             }
         }
-        signal activated(string share_mime, string share_uuid)
+        signal activated()
         onActivated: {
-            selectorData.shareMime = share_mime
-            selectorData.shareUuid = share_uuid
+            selectorData.fetch()
             open()
         }
     }
@@ -256,15 +244,14 @@ ApplicationWindow {
                 anchors.margins: 10
             }
         }
-        signal activated(string share_mime, string share_uuid, string target_uuid)
+        signal activated()
         onActivated: {
-            var contact_index = contactsModel.indexByUuid(target_uuid)
+            var contact_index = contactsModel.indexByUuid(shareReceiver.target)
             if (contact_index === -1) {
                 close()
             }
             contact = contactsModel.get(contact_index)
-            directData.shareMime = share_mime
-            directData.shareUuid = share_uuid
+            directData.fetch()
             open()
         }
     }

@@ -49,15 +49,13 @@ int main(int argc, char ** argv) {
             multiple_files = true;
         } if (arg.contains("--share-mime=")) {
             mime = arg.replace("--share-mime=", "");
-        } else if (arg.contains("--share-uuid=")) {
-            share_uuid = arg.replace("--share-uuid=", "");
         }
     }
 
     AppInfoModel appInfoModel;
     view.rootContext()->setContextProperty("appInfoModel", &appInfoModel);
 
-    BackendManager backend(mime, share_uuid, multiple_files, &appInfoModel);
+    BackendManager backend(mime, multiple_files, &appInfoModel);
     view.rootContext()->setContextProperty("backend", &backend);
 
     view.load("interface/interface.qml");

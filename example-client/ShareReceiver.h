@@ -26,22 +26,30 @@
 class ShareReceiver : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QVariantMap extras READ extras NOTIFY extrasChanged)
+    Q_PROPERTY(QString target READ target NOTIFY dataChanged)
+    Q_PROPERTY(QString mime READ mime NOTIFY dataChanged)
+    Q_PROPERTY(QVariantMap extras READ extras NOTIFY dataChanged)
 
 public:
     ShareReceiver(ContactModel *shareModel);
-    Q_INVOKABLE void receive(QString uuid);
     Q_INVOKABLE void dynamicRegister();
     Q_INVOKABLE void dynamicClear();
     Q_INVOKABLE QVariantList variantListFromKey(QString key);
+    QString target() const;
+    QString mime() const;
     QVariantMap extras() const;
 
+public slots:
+    void Receive(QString target, QString mime, QVariantMap extras);
+
 signals:
-    void extrasChanged();
+    void dataChanged();
 
 private:
     org::freedesktop::Share* m_shareReceiver;
     ContactModel *m_shareModel;
+    QString m_target;
+    QString m_mime;
     QVariantMap m_extras;
 };
 

@@ -26,17 +26,15 @@ using namespace std;
 class BackendManager : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString mime READ mime NOTIFY mimeChanged)
-    Q_PROPERTY(QString share_uuid READ share_uuid NOTIFY shareUuidChanged)
 
 public:
-    BackendManager(QString mime, QString share_uuid, bool multiple_files, AppInfoModel *appInfo, QObject *parent = nullptr);
+    BackendManager(QString mime, bool multiple_files, AppInfoModel *appInfo, QObject *parent = nullptr);
     Q_INVOKABLE void fetchAppInfo();    
-    Q_INVOKABLE void launchApp(QString launchPath, QString target_uuid = "");
+    Q_INVOKABLE void launchApp(QString launchPath, QString group, QString desktop_name);
     void getDesktopFileInfo(QString path);
     QList<DirectTargets> getDirectShareInfo(QString path);
 
     QString mime() const;
-    QString share_uuid() const;
 
 signals:
     void mimeChanged();
@@ -45,7 +43,6 @@ signals:
 private:
     AppInfoModel *m_appInfoModel;
     QString m_mime;
-    QString m_share_uuid;
     bool m_multiple_files;
 };
 

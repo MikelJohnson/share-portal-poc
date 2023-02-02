@@ -8,16 +8,20 @@ Type=Application
 Categories=Network;
 MimeType=text/plain;image/png;
 Share=Generic;ChangeProfileImage;
-DynamicShareExec=/path/to/client --dynamic --share-mime=%m --share-uuid=%s --target-uuid=%t
 
 [Desktop Share Generic]
 Name=Share with peeps
-Exec=/path/to/client --send --share-mime=%m --share-uuid=%s
 Icon=group
-MimeType=image/png;
+MimeType=image/png;text/plain;
+AcceptsMultipleFiles=true
 
 [Desktop Share ChangeProfileImage]
 Name=Change your profile image
-Exec=/path/to/client --userimage --share-mime=%m --share-uuid=%s
 Icon=user
 MimeType=image/png;
+
+[Desktop Share Debug]
+Name=View share info
+Icon=documentinfo
+MimeType=image/png;text/plain;
+AcceptsMultipleFiles=true

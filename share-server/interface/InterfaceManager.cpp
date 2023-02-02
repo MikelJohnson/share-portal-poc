@@ -24,11 +24,11 @@
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
+#include <iostream>
 
-BackendManager::BackendManager(QString mime, QString share_uuid, bool multiple_files, AppInfoModel *appInfo, QObject *parent) : m_mime(mime), m_share_uuid(share_uuid), m_multiple_files(multiple_files), m_appInfoModel(appInfo), QObject(parent) { }
+BackendManager::BackendManager(QString mime, bool multiple_files, AppInfoModel *appInfo, QObject *parent) : m_mime(mime), m_multiple_files(multiple_files), m_appInfoModel(appInfo), QObject(parent) { }
 
 QString BackendManager::mime() const { return m_mime; }
-QString BackendManager::share_uuid() const { return m_share_uuid; }
 QList<DirectTargets> BackendManager::getDirectShareInfo(QString path) {
     QFile loadFile(QStringLiteral("./daemon/DirectInfo.json"));
     QList<DirectTargets> targets;
@@ -65,9 +65,10 @@ void BackendManager::getDesktopFileInfo(QString path) {
     QString name;
     QString icon;
     QString exec;
-    QString directExec;
     QString main_mime;
     QList<QString> chunks;
+    QString desktop_name = path.split("/").last();
+    desktop_name.replace(".desktop", "");
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
@@ -75,7 +76,7 @@ void BackendManager::getDesktopFileInfo(QString path) {
     while (!file.atEnd()) {
         text = QString(file.readAll());
     }
-    if (text.isEmpty() || !text.contains("[Desktop Entry]") || (!text.contains("Desktop Share") && !text.contains("DynamicShareExec=")) || text.contains("NoDisplay=true") || text.contains("Hidden=true")  || text.contains("Terminal=true") || text.contains("OnlyShowIn") || !text.contains("Name") || !text.contains("Exec=")) {
+    if (text.isEmpty() || !text.contains("[Desktop Entry]") || text.contains("NoDisplay=true") || text.contains("Hidden=true")  || text.contains("Terminal=true") || text.contains("OnlyShowIn") || !text.contains("Name") || !text.contains("Exec=")) {
         return;
     }
     text = text.split("[Desktop Entry]").at(1);
@@ -96,10 +97,6 @@ void BackendManager::getDesktopFileInfo(QString path) {
     chunks.at(0).indexOf(QRegularExpression("\\bExec=.*"), 0, &match);
     exec = match.captured().replace("Exec=", "");
 
-    if (chunks.at(0).indexOf(QRegularExpression("\\bDynamicShareExec=.*"), 0, &match) != -1) {
-        directExec = match.captured().replace("DynamicShareExec=", "");
-    }
-
     chunks.at(0).indexOf(QRegularExpression("\\bMimeType=.*"), 0, &match);
     main_mime = match.captured().replace("bMimeType=", "");
 
@@ -113,7 +110,6 @@ void BackendManager::getDesktopFileInfo(QString path) {
         sh_key.replace("Desktop Share ", "");
         QString sh_name;
         QString sh_icon;
-        QString sh_exec;
         QString sh_mime;
         if (m_multiple_files && !i.contains("AcceptsMultipleFiles=true")) {
             continue;
@@ -132,21 +128,17 @@ void BackendManager::getDesktopFileInfo(QString path) {
         if (i.indexOf(QRegularExpression("\\bIcon=.*"), 0, &match) != -1) {
             sh_icon = match.captured().replace("Icon=", "");
         }
-        i.indexOf(QRegularExpression("\\bExec=.*"), 0, &match);
-        sh_exec = match.captured().replace("Exec=", "");
-        ShareTargets target(sh_key, sh_name, sh_icon, sh_exec);
+        ShareTargets target(sh_key, sh_name, sh_icon);
         share_targets.push_back(target);
     }
 
-    if (text.contains("DynamicShareExec")) {
-        direct_targets = getDirectShareInfo(path);
-    }
+    direct_targets = getDirectShareInfo(path);
 
     if (share_targets.count() == 0 && direct_targets.count() == 0) {
         return;
     }
 
-    AppInfoObject appInfo(name, icon, exec, directExec, share_targets, direct_targets);
+    AppInfoObject appInfo(name, icon, exec, desktop_name, share_targets, direct_targets);
 
     m_appInfoModel->addAppInfoObject(appInfo);
 }
@@ -162,11 +154,7 @@ void BackendManager::fetchAppInfo() {
         getDesktopFileInfo(flatpakit.next());
     }
 }  
-void BackendManager::launchApp(QString launchPath, QString target_uuid) {
-    launchPath.replace("%t", target_uuid);
-    launchPath.replace("%s", m_share_uuid);
-    launchPath.replace("%m", m_mime);
-    launchPath = "nohup " + launchPath + " </dev/null >/dev/null 2>&1 &";
-    system(launchPath.toStdString().c_str());
+void BackendManager::launchApp(QString launchPath, QString group, QString desktop_name) {
+    cout << launchPath.toStdString() << "\n" << group.toStdString() << "\n" << desktop_name.toStdString();
     QCoreApplication::quit();
-}  
+}

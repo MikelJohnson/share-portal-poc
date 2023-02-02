@@ -17,12 +17,11 @@
 #include "AppInfo.h"
 
 ShareTargets::ShareTargets() { }
-ShareTargets::ShareTargets(QString key, QString name, QString icon, QString exec) : m_key(key), m_name(name), m_icon(icon), m_exec(exec) { }
+ShareTargets::ShareTargets(QString key, QString name, QString icon) : m_key(key), m_name(name), m_icon(icon) { }
 
 QString ShareTargets::key() const { return m_key; }
 QString ShareTargets::name() const { return m_name; }
 QString ShareTargets::icon() const { return m_icon; }
-QString ShareTargets::exec() const { return m_exec; }
 
 DirectTargets::DirectTargets() { }
 DirectTargets::DirectTargets(QString uuid, QString title, QString image, int priority) : m_uuid(uuid), m_title(title), m_image(image), m_priority(priority) { }
@@ -33,12 +32,12 @@ QString DirectTargets::image() const { return m_image; }
 int DirectTargets::priority() const { return m_priority; }
 
 AppInfoObject::AppInfoObject() { }
-AppInfoObject::AppInfoObject(QString name, QString icon, QString exec, QString directExec, QList<ShareTargets> share_targets, QList<DirectTargets> direct_targets) : m_name(name), m_icon(icon), m_exec(exec), m_directExec(directExec), m_share_targets(share_targets), m_direct_targets(direct_targets) { }
+AppInfoObject::AppInfoObject(QString name, QString icon, QString exec, QString desktop_name, QList<ShareTargets> share_targets, QList<DirectTargets> direct_targets) : m_name(name), m_icon(icon), m_exec(exec), m_desktop_name(desktop_name), m_share_targets(share_targets), m_direct_targets(direct_targets) { }
 
 QString AppInfoObject::name() const { return m_name; }
 QString AppInfoObject::icon() const { return m_icon; }
 QString AppInfoObject::exec() const { return m_exec; }
-QString AppInfoObject::directExec() const { return m_directExec; }
+QString AppInfoObject::desktop_name() const { return m_desktop_name; }
 QList<ShareTargets> AppInfoObject::share_targets() const { return m_share_targets; }
 QList<DirectTargets> AppInfoObject::direct_targets() const { return m_direct_targets; }
 
@@ -100,7 +99,7 @@ QVariant AppInfoModel::data(const QModelIndex & index, int role) const {
     if (role == NameRole) return data_object.name();
     else if (role == IconRole) return data_object.icon();
     else if (role == ExecRole) return data_object.exec();
-    else if (role == DirectExecRole) return data_object.directExec();
+    else if (role == DesktopNameRole) return data_object.desktop_name();
     else if (role == ShareTargetsRole) return QVariant::fromValue<QList<ShareTargets>>(data_object.share_targets());
     else if (role == DirectTargetsRole) return QVariant::fromValue<QList<DirectTargets>>(data_object.direct_targets());
 
@@ -113,7 +112,7 @@ QHash<int, QByteArray> AppInfoModel::roleNames() const {
     roles[NameRole] = "name";
     roles[IconRole] = "icon";
     roles[ExecRole] = "exec";
-    roles[DirectExecRole] = "direct_exec";
+    roles[DesktopNameRole] = "desktop_name";
     roles[ShareTargetsRole] = "share_targets";
     roles[DirectTargetsRole] = "direct_targets";
 

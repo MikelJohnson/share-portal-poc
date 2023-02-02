@@ -31,37 +31,8 @@ ApplicationWindow {
     header: Column {
         padding: 20
         Text {
-            text: backend.mime
+            text: backend ? backend.mime : ""
             color: Kirigami.Theme.textColor
-        }
-        Row {
-            opacity: 0.5
-            spacing: 5
-            TextEdit {
-                id: uuidText
-                text: backend.share_uuid
-                color: Kirigami.Theme.textColor
-                font.pixelSize: 10
-                enabled: false
-            }
-            Button {
-                anchors.verticalCenter: uuidText.verticalCenter
-                enabled: true
-                icon.name: "edit-copy"
-                icon.color: "transparent"
-                flat: true
-                visible: uuidText.text
-                padding: 0
-                icon.width: 20
-                icon.height: 20
-                width: 20
-                height: 20
-                onClicked: {
-                    uuidText.selectAll()
-                    uuidText.copy()
-                    uuidText.deselect()
-                }
-            }
         }
     }
     ListView {
@@ -130,8 +101,7 @@ ApplicationWindow {
                     }
                     onClicked:{
                         if (mouse.button === Qt.LeftButton){
-                            console.log("launching " + values.title)
-                            backend.launchApp(direct_exec, values.uuid)
+                            backend.launchApp(exec, values.uuid, desktop_name)
                         }
                     }
                 }
@@ -209,8 +179,7 @@ ApplicationWindow {
                     }
                     onClicked:{
                         if (mouse.button === Qt.LeftButton){
-                            console.log("launching " + values.name)
-                            backend.launchApp(values.exec)
+                            backend.launchApp(exec, values.key, desktop_name)
                         }
                     }
                 }

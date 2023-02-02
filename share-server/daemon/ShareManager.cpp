@@ -18,36 +18,60 @@
 #include "ShareManager.h"
 #include <QUuid>
 #include <QDBusArgument>
-#include <QDebug>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QFile>
+#include <QProcess>
 
 ShareManager::ShareManager(QObject *parent) : QObject(parent) { }
+
+void ShareManager::Receive(const QString &target, const QString &uuid) {
+    if (!m_requests.contains(uuid)) {
+        return;
+    }
+    QVariantList data = m_requests[uuid].toList();
+    m_requests.remove(uuid);
+    m_share_target->Receive(target, data[0].toString(), data[1].toMap());
+}
+
+void ShareManager::Process(QStringList info, QString uuid, QString service) {
+    m_share_target = std::make_unique<org::freedesktop::ShareTarget>(service, "/org/freedesktop/ShareTarget",
+                                                                     QDBusConnection::sessionBus(), this);
+    if (!m_share_target->isValid()) {
+        m_dbus_watcher =  std::make_unique<QDBusServiceWatcher>(service, QDBusConnection::sessionBus(), QDBusServiceWatcher::WatchForRegistration);
+        connect(m_dbus_watcher.get(), &QDBusServiceWatcher::serviceRegistered, [this, info, uuid]() {
+            this->Receive(info[1], uuid);
+        });
+        QString launchPath = "nohup " + info[0] + " </dev/null >/dev/null 2>&1 &";
+        system(launchPath.toStdString().c_str());
+    } else {
+        this->Receive(info[1], uuid);
+    }
+}
 
 void ShareManager::Send(const QString &mime, const QVariantMap &extras) {
     QString uuid = QUuid::createUuid().toString().replace("{", "").replace("}", "");
     QString multiple;
     m_requests[uuid] = QVariant(QVariantList{QVariant(mime), QVariant(extras)});
+
+    QStringList arg{"--share-mime=" + mime};
+
     if (extras.contains("files")) {
         QDBusArgument dbusList = extras["files"].value<QDBusArgument>();
         QVariantList result;
         dbusList >> result;
         if (result.count() > 1) {
-            multiple = " --multiple-files";
+            arg.push_back(" --multiple-files");
         }
     }
-    system(QString("nohup ./share-interface --share-mime=" + mime + " --share-uuid=" + uuid + multiple + " </dev/null >/dev/null 2>&1 &").toStdString().c_str());
-}
+    QProcess *process = new QProcess(nullptr);
+    connect(process, &QProcess::readyReadStandardOutput, [this, process, uuid]() {
+        QStringList output = QString(process->readAllStandardOutput()).split("\n");
+        this->Process(output, uuid, output[2]);
+    });
 
-QVariantMap ShareManager::Receive(const QString &uuid) {
-    if (!m_requests.contains(uuid)) {
-        return QVariantMap();
-    }
-    QVariantMap extras = m_requests[uuid].toList().at(1).toMap();
-    m_requests.remove(uuid);
-    return extras;
+    process->start(QString("./share-interface"), arg);
 }
 
 void ShareManager::DynamicRegister(const QString &app, const QList<QVariantMap> &targets) {

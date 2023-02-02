@@ -28,6 +28,8 @@
 #include "ShareReceiver.h"
 #include "Contact.h"
 #include "LockHandler.h"
+#include <QtDBus/QDBusConnection>
+#include "qmake/share_target_adaptor.h"
 
 QString loadConfig() {
     QString config_location = QStringLiteral("./Contacts.json");
@@ -104,6 +106,12 @@ int main(int argc, char *argv[])
     view.rootContext()->setContextProperty("contactsModel", &contacts);
 
     ShareReceiver *shareReceiver = new ShareReceiver(&contacts);
+
+    new ShareTargetAdaptor(shareReceiver);
+
+    QDBusConnection connection = QDBusConnection::sessionBus();
+    connection.registerObject("/org/freedesktop/ShareTarget", shareReceiver);
+    connection.registerService("org.bar.foosocial");
     view.rootContext()->setContextProperty("shareReceiver", shareReceiver);
 
     view.rootContext()->setContextProperty("user_name", userInfo().at(0));

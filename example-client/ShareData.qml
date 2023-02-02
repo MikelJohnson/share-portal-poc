@@ -19,12 +19,10 @@ import QtQuick.Controls 2.15
 
 Item {
     id: shareData
-    property string shareMime
-    property string shareUuid
     property string debugText
     Column {
         spacing: 10
-        visible: shareMime === "text/plain"
+        visible: shareReceiver.mime === "text/plain"
         Text {
             text: shareReceiver.extras["title"]
         }
@@ -39,7 +37,7 @@ Item {
     }
     Column {
         spacing: 10
-        visible: shareMime !== "text/plain"
+        visible: shareReceiver.mime !== "text/plain"
         Text {
             text: debugText
             font.pixelSize: 10
@@ -49,11 +47,8 @@ Item {
             font.pixelSize: 10
         }
     }
-    onShareUuidChanged: {
-        if (shareUuid === "") {
-            return
-        }
-        shareReceiver.receive(shareUuid)
+    signal fetch()
+    onFetch: {
         shareData.debugText = "files: " + JSON.stringify(shareReceiver.variantListFromKey("files"), null, "\r")
     }
 }

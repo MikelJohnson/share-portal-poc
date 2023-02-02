@@ -27,22 +27,19 @@ class ShareTargets
     Q_PROPERTY(QString key READ key)
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString icon READ icon)
-    Q_PROPERTY(QString exec READ exec)
 
 public:
     ShareTargets();
-    ShareTargets(QString key, QString name, QString icon, QString exec);
+    ShareTargets(QString key, QString name, QString icon);
 
     QString key() const;
     QString name() const;
     QString icon() const;
-    QString exec() const;
 
 private:
     QString m_key;
     QString m_name;
     QString m_icon;
-    QString m_exec;
 };
 
 Q_DECLARE_METATYPE(ShareTargets)
@@ -78,18 +75,18 @@ class AppInfoObject
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QString icon READ icon)
     Q_PROPERTY(QString exec READ exec)
-    Q_PROPERTY(QString directExec READ directExec)
+    Q_PROPERTY(QString desktop_name READ desktop_name)
     Q_PROPERTY(QList<ShareTargets> share_targets READ share_targets)
     Q_PROPERTY(QList<DirectTargets> direct_targets READ direct_targets)
 
 public:
     AppInfoObject();
-    AppInfoObject(QString name, QString icon, QString exec, QString directExec, QList<ShareTargets> share_targets, QList<DirectTargets> direct_targets);
+    AppInfoObject(QString name, QString icon, QString exec, QString desktop_name, QList<ShareTargets> share_targets, QList<DirectTargets> direct_targets);
 
     QString name() const;
     QString icon() const;
     QString exec() const;
-    QString directExec() const;
+    QString desktop_name() const;
     QList<ShareTargets> share_targets() const;
     QList<DirectTargets> direct_targets() const;
 
@@ -97,7 +94,7 @@ private:
     QString m_name;
     QString m_icon;
     QString m_exec;
-    QString m_directExec;
+    QString m_desktop_name;
     QList<ShareTargets> m_share_targets;
     QList<DirectTargets> m_direct_targets;
 };
@@ -114,7 +111,7 @@ public:
         NameRole = Qt::UserRole + 1,
         IconRole,
         ExecRole,
-        DirectExecRole,
+        DesktopNameRole,
         ShareTargetsRole,
         DirectTargetsRole
     };

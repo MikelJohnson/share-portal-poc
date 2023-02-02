@@ -1,5 +1,5 @@
 QT += qml quick dbus
-
+DBUS_ADAPTORS += ../share_target.xml
 DBUS_INTERFACES += ../share.xml
 HEADERS += ../ShareReceiver.h ../LockHandler.h\
            ../Contact.h
