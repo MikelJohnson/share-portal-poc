@@ -27,6 +27,7 @@ class ShareSender : public QObject
 public:
     ShareSender();
     Q_INVOKABLE void send(QString mime, QString json);
+    Q_INVOKABLE bool canShare(QString mime, QString json);
 
 private:
     org::freedesktop::Share* m_shareSender;

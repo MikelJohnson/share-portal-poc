@@ -7,6 +7,12 @@
             <arg name="extras" type="a{sv}" direction="in"/>
             <annotation name="org.qtproject.QtDBus.QtTypeName.In1" value="QVariantMap"/>
         </method>
+        <method name="CanShare">
+            <arg name="mime" type="s" direction="in"/>
+            <arg name="extras" type="a{sv}" direction="in"/>
+            <arg name="shareable" type="b" direction="out"/>
+            <annotation name="org.qtproject.QtDBus.QtTypeName.In1" value="QVariantMap"/>
+        </method>
         <method name="DynamicRegister">
             <arg name="app" type="s" direction="in"/>
             <arg name="targets" type="aa{sv}" direction="in"/>

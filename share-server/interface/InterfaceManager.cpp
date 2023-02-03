@@ -49,7 +49,7 @@ QList<DirectTargets> BackendManager::getDirectShareInfo(QString path) {
         if (!obj["mime"].toArray().contains(QJsonValue(m_mime))) {
             continue;
         }
-        DirectTargets target = DirectTargets(obj["uuid"].toString(), obj["title"].toString(), obj["image"].toString(), obj["priority"].toInt());
+        DirectTargets target = DirectTargets(obj["id"].toString(), obj["title"].toString(), obj["image"].toString(), obj["priority"].toInt());
         targets.push_back(target);
     }
 

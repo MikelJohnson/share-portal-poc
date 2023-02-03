@@ -23,6 +23,8 @@
 #include <QJsonObject>
 #include <QFile>
 #include <QProcess>
+#include <QFileInfo>
+#include <QMimeType>
 
 ShareManager::ShareManager(QObject *parent) : QObject(parent) { }
 
@@ -48,6 +50,39 @@ void ShareManager::Process(QStringList info, QString uuid, QString service) {
     } else {
         this->Receive(info[1], uuid);
     }
+}
+
+bool ShareManager::CanShare(const QString &mime, const QVariantMap &extras) {
+    QMimeDatabase db;
+    if (mime.isEmpty() || extras.isEmpty()) {
+        return false;
+    }
+    bool isFilesEmpty = true;
+    if (extras.contains("files")) {
+        QDBusArgument dbusList = extras["files"].value<QDBusArgument>();
+        QVariantList result;
+        dbusList >> result;
+        if (!result.isEmpty()) {
+            isFilesEmpty = false;
+        }
+        for (const QVariant &var : result) { // check if file is valid
+            QString filepath = var.toString();
+            filepath.replace("file:/", "");
+            if (!QFileInfo::exists(filepath)) {
+                isFilesEmpty = true;
+            } else if (db.mimeTypeForFile(filepath).name() != mime) {
+                isFilesEmpty = true;
+            }
+        }
+    }
+    if (mime.startsWith("text/")) {
+        if (isFilesEmpty && (!extras.contains("text") || extras["text"].toString().isEmpty())) {
+            return false;
+        }
+    } else if (isFilesEmpty) {
+        return false;
+    }
+    return true;
 }
 
 void ShareManager::Send(const QString &mime, const QVariantMap &extras) {

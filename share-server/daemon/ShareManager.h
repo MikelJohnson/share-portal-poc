@@ -32,6 +32,7 @@ public:
 
 public slots:
     void Send(const QString &mime, const QVariantMap &extras);
+    bool CanShare(const QString &mime, const QVariantMap &extras);
     void DynamicRegister(const QString &app, const QList<QVariantMap> &targets);
     void DynamicClear(const QString &app);
     void Process(QStringList info, QString uuid, QString service);

@@ -3,7 +3,7 @@
 <node>
     <interface name="org.freedesktop.ShareTarget">
         <method name="Receive">
-            <!-- UUID or name -->
+            <!-- Target id or name -->
             <arg name="target" type="s" direction="in"/>
             <arg name="mime" type="s" direction="in"/>
             <arg name="extras" type="a{sv}" direction="in"/>

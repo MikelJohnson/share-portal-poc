@@ -48,7 +48,7 @@ void ShareReceiver::dynamicRegister() {
     for (int i = 0; i < m_shareModel->length(); i++) {
         ContactObject obj = m_shareModel->getObject(i);
         QVariantMap share_target;
-        share_target["uuid"] = QVariant(obj.uuid());
+        share_target["id"] = QVariant(obj.uuid());
         share_target["title"] = QVariant(obj.name());
         share_target["image"] = QVariant(QFileInfo(obj.image()).canonicalFilePath());
         share_target["mime"] = QVariant(QStringList{"image/png", "text/plain"});

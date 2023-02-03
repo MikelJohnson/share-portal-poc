@@ -33,3 +33,14 @@ void ShareSender::send(QString mime, QString json) {
     }
     m_shareSender->Send(mime, extras);
 };
+
+bool ShareSender::canShare(QString mime, QString json) {
+    QJsonObject extras_object = QJsonDocument::fromJson(json.toUtf8()).object();
+    QVariantMap extras;
+    for (const QString &key : extras_object.keys()) {
+        extras[key] = extras_object[key].toVariant();
+    }
+    QDBusPendingReply<bool> reply = m_shareSender->CanShare(mime, extras);
+    reply.waitForFinished();
+    return reply.value();
+};

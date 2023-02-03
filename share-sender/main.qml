@@ -21,7 +21,7 @@ import QtQuick.Layouts 1.15
 
 ApplicationWindow {
     id: window
-    width: 650
+    width: 670
     height: 500
     visible: true
     Column {
@@ -32,6 +32,11 @@ ApplicationWindow {
             Button {
                 text: "send stuff"
                 onClicked: if (mimeText.text) shareSender.send(mimeText.text, jsonText.text)
+            }
+            Button {
+                property bool canShare
+                text: "can share: " + canShare
+                onClicked: canShare = shareSender.canShare(mimeText.text, jsonText.text)
             }
             Button {
                 text: "text example"
@@ -98,20 +103,18 @@ ApplicationWindow {
             placeholderText: "Description"
         }
 
-        Text { text: "Text"; visible: mimeText.text === "text/plain" }
+        Text { text: "Text" }
         TextField {
             id: textText
             width: 300
             placeholderText: "Text"
-            visible: mimeText.text === "text/plain"
             selectByMouse: true
         }
 
-        Text { text: "Files"; visible: mimeText.text !== "text/plain" }
+        Text { text: "Files" }
         TextField {
             id: filesText
             width: 300
-            visible: mimeText.text !== "text/plain"
             placeholderText: "Files"
             selectByMouse: true
         }
